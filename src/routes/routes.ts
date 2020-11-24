@@ -41,9 +41,7 @@ export class Routes {
     return {
       pathSettings: {
         "/": {
-          idName: "id",
-          statusCode: 200,
-          response: '{"status":"Ok"}'
+          response: "Ok."
         }
       },
       defaultConfig: {
