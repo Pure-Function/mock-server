@@ -1,5 +1,5 @@
 {
-  "name": "mock-server",
+  "name": "@funq/mock-server",
   "version": "0.0.2",
   "description": "RESTful Mock server with file upload and download support",
   "repository": {
