@@ -5,12 +5,14 @@ import { isNumber } from "lodash";
 import { DataStore } from "../dao/DataStore";
 import { FileDataStore } from "../dao/FileDataStore";
 import { ConfigService } from "../config/ConfigService";
+import { ConfigConstants } from "../config/ConfigConstants";
 import { getExecutors } from "../executor";
 import { RequestMethod } from "../domain/RequestMethod";
 import { RequestExecutor } from "../executor/RequestExecutor";
 import { RequestUtil } from "../request/RequestUtil";
 import { RequestConfigService } from "../request/RequestConfigService";
 import { RequestConfig } from "../domain/RequestConfig";
+import { FileSystemService } from "../filesystem/FileSystemService";
 
 export class Routes {
   dataPath: string;
@@ -23,6 +25,9 @@ export class Routes {
   constructor(dataPath: string, configPath: string, dynamicConfig: any) {
     this.dataPath = dataPath;
     this.configPath = configPath;
+    // setup global data
+    this.initialize(configPath);
+
     this.configService = new ConfigService(configPath, dynamicConfig);
     this.dataStore = new FileDataStore(dataPath);
     this.requestConfigService = new RequestConfigService(
@@ -30,6 +35,50 @@ export class Routes {
       this.dataStore
     );
     this.reqExecutors = getExecutors(this.dataStore);
+  }
+
+  private initializeGlobalInitData(): any {
+    return {
+      pathSettings: {
+        "/": {
+          idName: "id",
+          statusCode: 200,
+          response: '{"status":"Ok"}'
+        }
+      },
+      defaultConfig: {
+        requestType: "REST",
+        statusCode: 200,
+        idName: "id",
+        response: "To Be Implemented.",
+        latency: 0,
+        otherConfig: {}
+      },
+      errorConfig: {
+        statusCode: 400,
+        response: "Invalid Request."
+      },
+      overwriteConfig: {
+        statusCode: null,
+        response: null,
+        latency: null
+      }
+    };
+  }
+
+  private initialize(configPath: string) {
+    if (FileSystemService.exists(configPath)) {
+      const globalPath = FileSystemService.join(
+        configPath,
+        ConfigConstants.DEFAULT_CONFIG
+      );
+      if (!FileSystemService.exists(globalPath)) {
+        FileSystemService.writeFileSync(
+          globalPath,
+          this.initializeGlobalInitData()
+        );
+      }
+    }
   }
 
   private getReqExecutor(requestType: string): RequestExecutor {
@@ -68,19 +117,32 @@ export class Routes {
     requestConfig: RequestConfig,
     requestMethod: RequestMethod,
     request: Request,
-    response: Response
+    response: Response,
+    next: any
   ) {
     if (!requestConfig || !requestConfig.requestType) {
       console.log("Could not find request type, path: ", reqPath);
-      this.throwError(request, response, this.dataStore, requestConfig);
-      return;
+      if (next()) {
+        next();
+      } else {
+        this.throwError(request, response, this.dataStore, requestConfig);
+        return;
+      }
     }
 
     const reqExecutor = this.getReqExecutor(requestConfig.requestType);
     if (reqExecutor == null) {
-      console.log("Invalid request type: ", requestConfig.requestType, reqPath);
-      this.throwError(request, response, this.dataStore, requestConfig);
-      return;
+      if (next()) {
+        next();
+      } else {
+        console.log(
+          "Invalid request type: ",
+          requestConfig.requestType,
+          reqPath
+        );
+        this.throwError(request, response, this.dataStore, requestConfig);
+        return;
+      }
     }
 
     reqExecutor.execute(
@@ -95,7 +157,8 @@ export class Routes {
   private processRequest(
     requestMethod: RequestMethod,
     request: Request,
-    response: Response
+    response: Response,
+    next: any
   ) {
     const reqPath: string = request.path;
     const forPost =
@@ -117,7 +180,8 @@ export class Routes {
           requestConfig,
           requestMethod,
           request,
-          response
+          response,
+          null
         );
       }, requestConfig.latency);
     } else {
@@ -126,7 +190,8 @@ export class Routes {
         requestConfig,
         requestMethod,
         request,
-        response
+        response,
+        next
       );
     }
   }
@@ -135,17 +200,23 @@ export class Routes {
     app
       .route("/*")
       .get((request: Request, response: Response) => {
-        this.processRequest(RequestMethod.GET, request, response);
+        this.processRequest(RequestMethod.GET, request, response, null);
       })
       .post((request: Request, response: Response) => {
-        this.processRequest(RequestMethod.POST, request, response);
+        this.processRequest(RequestMethod.POST, request, response, null);
       })
       .put((request: Request, response: Response) => {
-        this.processRequest(RequestMethod.PUT, request, response);
+        this.processRequest(RequestMethod.PUT, request, response, null);
       })
       .delete((request: Request, response: Response) => {
-        this.processRequest(RequestMethod.DELETE, request, response);
+        this.processRequest(RequestMethod.DELETE, request, response, null);
       });
+  }
+
+  public middleware(request: Request, response: Response, next: any) {
+    const requestMethod =
+      RequestMethod[request.method as keyof typeof RequestMethod];
+    this.processRequest(requestMethod, request, response, next);
   }
 
   private static getRequestConfig(

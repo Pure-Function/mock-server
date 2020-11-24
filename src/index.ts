@@ -2,6 +2,8 @@ import { Application } from "express";
 import dotenv from "dotenv";
 
 import MockServerApp from "./app/MockServerApp";
+import { Routes } from "./routes/routes";
+import { Request, Response } from "express";
 
 dotenv.config();
 
@@ -26,14 +28,13 @@ export function startMockServer(
   });
 }
 
-/*
-startMockServer("../mock-restapi-server/mock_data/config", "../mock-restapi-server/mock_data/data", 
-{"/test": {
-  "idName": "testId",
-  "requestType": "CUSTOM",
-  "otherConfig": {"custom_attr1": "value1"},
-  "response": function (request:any, response:any, requestConfig:any) {
-    response.status(400).send({"success":"test successful!!!!!!!!!"});
-  } 
-} }, 3000);
-*/
+export function middleware(
+  configPath: string,
+  dataPath: string,
+  dynamicConfig: any = null
+) {
+  const routes = new Routes(dataPath, configPath, dynamicConfig);
+  return function(request: Request, response: Response, next: any) {
+    return routes.middleware(request, response, next);
+  };
+}
