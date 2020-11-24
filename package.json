@@ -6,6 +6,9 @@
     "type": "git",
     "url": "git+https://github.com/Pure-Function/mock-server.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "mock-server",
     "json",
@@ -13,7 +16,7 @@
     "file-download",
     "extendable"
   ],
-  "author": "",
+  "author": "Pure Function",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Pure-Function/mock-server/issues"
