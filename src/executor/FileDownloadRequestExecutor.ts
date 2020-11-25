@@ -59,7 +59,10 @@ export class FileDownloadRequestExecutor implements RequestExecutor {
       successFilePath,
       searchPaths,
       writePath,
-      isPatternized
+      isPatternized,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
     } = requestConfig;
     const objIdValue = requestConfigService.getIdValue(
       request,
@@ -95,7 +98,16 @@ export class FileDownloadRequestExecutor implements RequestExecutor {
         respStream
       );
     } else {
-      RequestUtil.sendResponseData(null, response, reqPath, idName, objIdValue);
+      RequestUtil.sendResponseData(
+        null,
+        response,
+        reqPath,
+        idName,
+        objIdValue,
+        errorStatusCode,
+        errorMsg,
+        successStatusCode
+      );
     }
   }
 
@@ -107,14 +119,29 @@ export class FileDownloadRequestExecutor implements RequestExecutor {
     requestConfigService: RequestConfigService
   ) {
     const reqPath: string = request.path;
-    const { idName, isPatternized } = requestConfig;
+    const {
+      idName,
+      isPatternized,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    } = requestConfig;
     const objIdValue = requestConfigService.getIdValue(
       request,
       idName,
       reqPath,
       isPatternized
     );
-    RequestUtil.sendResponseData(null, response, reqPath, idName, objIdValue);
+    RequestUtil.sendResponseData(
+      null,
+      response,
+      reqPath,
+      idName,
+      objIdValue,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    );
   }
 
   public getSupportedRequestTypes(): string[] {

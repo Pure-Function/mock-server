@@ -24,7 +24,13 @@ export class FileUploadRequestExecutor implements RequestExecutor {
   ) {
     const reqPath: string = request.path;
     let respData: any = null;
-    const { idName, writePath } = requestConfig;
+    const {
+      idName,
+      writePath,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    } = requestConfig;
     if (request.files) {
       const uploadedFile = request.files[idName];
       //TODO: this to be changed to support other file systems.
@@ -42,7 +48,16 @@ export class FileUploadRequestExecutor implements RequestExecutor {
         size: uploadedFile.size
       };
     }
-    RequestUtil.sendResponseData(respData, response, reqPath, idName, null);
+    RequestUtil.sendResponseData(
+      respData,
+      response,
+      reqPath,
+      idName,
+      null,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    );
   }
 
   protected throwError(
@@ -53,14 +68,29 @@ export class FileUploadRequestExecutor implements RequestExecutor {
     requestConfigService: RequestConfigService
   ) {
     const reqPath: string = request.path;
-    const { idName, isPatternized } = requestConfig;
+    const {
+      idName,
+      isPatternized,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    } = requestConfig;
     const objIdValue = requestConfigService.getIdValue(
       request,
       idName,
       reqPath,
       isPatternized
     );
-    RequestUtil.sendResponseData(null, response, reqPath, idName, objIdValue);
+    RequestUtil.sendResponseData(
+      null,
+      response,
+      reqPath,
+      idName,
+      objIdValue,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    );
   }
 
   public getSupportedRequestTypes(): string[] {
