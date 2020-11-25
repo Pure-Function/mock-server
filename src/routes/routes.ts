@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import express from "express";
-import { isNumber } from "lodash";
+import { isNumber, isFunction, isPlainObject } from "lodash";
 
 import { DataStore } from "../dao/DataStore";
 import { FileDataStore } from "../dao/FileDataStore";
@@ -97,17 +97,36 @@ export class Routes {
     requestConfig: RequestConfig
   ) {
     const reqPath: string = request.path;
-    const idName =
-      requestConfig && requestConfig.idName ? requestConfig.idName : null;
-    const objIdValue = idName
-      ? this.requestConfigService.getIdValue(
+    let idName,
+      objIdValue,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode = null;
+
+    if (isPlainObject(requestConfig)) {
+      idName = requestConfig.idName;
+      if (idName) {
+        objIdValue = this.requestConfigService.getIdValue(
           request,
           idName,
           reqPath,
           requestConfig.isPatternized
-        )
-      : null;
-    RequestUtil.sendResponseData(null, response, reqPath, idName, objIdValue);
+        );
+      }
+      errorStatusCode = requestConfig.errorStatusCode;
+      errorMsg = requestConfig.errorMsg;
+      successStatusCode = requestConfig.successStatusCode;
+    }
+    RequestUtil.sendResponseData(
+      null,
+      response,
+      reqPath,
+      idName,
+      objIdValue,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    );
   }
 
   private executeRequest(
@@ -120,7 +139,7 @@ export class Routes {
   ) {
     if (!requestConfig || !requestConfig.requestType) {
       console.log("Could not find request type, path: ", reqPath);
-      if (next()) {
+      if (next && isFunction(next)) {
         next();
       } else {
         this.throwError(request, response, this.dataStore, requestConfig);
@@ -130,7 +149,7 @@ export class Routes {
 
     const reqExecutor = this.getReqExecutor(requestConfig.requestType);
     if (reqExecutor == null) {
-      if (next()) {
+      if (next && isFunction(next)) {
         next();
       } else {
         console.log(

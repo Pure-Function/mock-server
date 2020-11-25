@@ -6,6 +6,7 @@ import { RequestConfig } from "../domain/RequestConfig";
 import { RequestExecutor } from "./RequestExecutor";
 import { RequestType } from "../domain/RequestType";
 import { RequestConfigService } from "../request/RequestConfigService";
+import { isPlainObject } from "lodash";
 
 export class RestRequestExecutor implements RequestExecutor {
   dataStore: DataStore;
@@ -27,7 +28,10 @@ export class RestRequestExecutor implements RequestExecutor {
       successFilePath,
       successMsg,
       searchPaths,
-      isPatternized
+      isPatternized,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
     } = requestConfig;
     const objIdValue = requestConfigService.getIdValue(
       request,
@@ -37,7 +41,7 @@ export class RestRequestExecutor implements RequestExecutor {
     );
     let respData: any = null;
 
-    if (objIdValue || successFilePath) {
+    if (!successMsg && (objIdValue || successFilePath)) {
       /*if (writePath) {
         searchPaths.push(writePath);
       }*/
@@ -65,7 +69,10 @@ export class RestRequestExecutor implements RequestExecutor {
       response,
       reqPath,
       idName,
-      objIdValue
+      objIdValue,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
     );
   }
 
@@ -77,15 +84,35 @@ export class RestRequestExecutor implements RequestExecutor {
     requestConfigService: RequestConfigService
   ) {
     const reqPath: string = request.path;
-    const { idName, writePath, isPatternized } = requestConfig;
-    const data = request.body;
-    const fileNamePrefix = requestConfigService.getFileNamePrefix(
-      reqPath,
+    const {
+      idName,
+      writePath,
       isPatternized,
-      true
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    } = requestConfig;
+    const data = request.body;
+    let respData = null;
+    if (isPlainObject(data)) {
+      const fileNamePrefix = requestConfigService.getFileNamePrefix(
+        reqPath,
+        isPatternized,
+        true
+      );
+      respData = dataStore.save(idName, data, writePath, fileNamePrefix);
+    }
+
+    RequestUtil.sendResponseData(
+      respData,
+      response,
+      reqPath,
+      idName,
+      null,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
     );
-    const respData = dataStore.save(idName, data, writePath, fileNamePrefix);
-    RequestUtil.sendResponseData(respData, response, reqPath, idName, null);
   }
 
   private static updateData(
@@ -96,15 +123,34 @@ export class RestRequestExecutor implements RequestExecutor {
     requestConfigService: RequestConfigService
   ) {
     const reqPath: string = request.path;
-    const { idName, writePath, isPatternized } = requestConfig;
-    const data = request.body;
-    const fileNamePrefix = requestConfigService.getFileNamePrefix(
-      reqPath,
+    const {
+      idName,
+      writePath,
       isPatternized,
-      true
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
+    } = requestConfig;
+    const data = request.body;
+    let respData = null;
+    if (isPlainObject(data)) {
+      const fileNamePrefix = requestConfigService.getFileNamePrefix(
+        reqPath,
+        isPatternized,
+        true
+      );
+      respData = dataStore.update(idName, data, writePath, fileNamePrefix);
+    }
+    RequestUtil.sendResponseData(
+      respData,
+      response,
+      reqPath,
+      idName,
+      null,
+      errorStatusCode,
+      errorMsg,
+      successStatusCode
     );
-    const respData = dataStore.update(idName, data, writePath, fileNamePrefix);
-    RequestUtil.sendResponseData(respData, response, reqPath, idName, null);
   }
 
   private static deleteData(
@@ -120,7 +166,8 @@ export class RestRequestExecutor implements RequestExecutor {
       writePath,
       errorMsg,
       errorStatusCode,
-      isPatternized
+      isPatternized,
+      successStatusCode
     } = requestConfig;
     //const objIdValue = RequestUtil.getQueryValue(request, idName);
     const objIdValue = requestConfigService.getIdValue(
@@ -152,7 +199,8 @@ export class RestRequestExecutor implements RequestExecutor {
       idName,
       null,
       errorStatusCode,
-      errorMsg
+      errorMsg,
+      successStatusCode
     );
   }
 
