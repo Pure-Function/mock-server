@@ -28,6 +28,14 @@ export class FileDownloadRequestExecutor implements RequestExecutor {
       : "application/octet-stream";
   }
 
+  private getFileName(objIdValue: string, absolutePath: string) {
+    return objIdValue
+      ? objIdValue
+      : absolutePath
+      ? path.parse(absolutePath).name
+      : "file";
+  }
+
   protected processResponse(
     response: Response,
     fileName: string,
@@ -93,7 +101,7 @@ export class FileDownloadRequestExecutor implements RequestExecutor {
       );
       this.processResponse(
         response,
-        objIdValue,
+        this.getFileName(objIdValue, absolutePath),
         path.extname(absolutePath),
         respStream
       );
