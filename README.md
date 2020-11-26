@@ -17,8 +17,9 @@ You can use our mock-server in two ways, standalone or as middleware. Below samp
 Download or clone our template mock-server to get started quickly.
 
 ```console
-git clone …
-npm install
+git clone https://github.com/Pure-Function/mock-server-template.git
+cd mock-server-template
+npm i
 npm start
 ```
 
@@ -29,7 +30,7 @@ If you follow the template sample, you can start your own server by adding the m
 ```console
 yarn add @funq/mock-server
 or
-npm -i @funq/mock-server
+npm i @funq/mock-server
 ```
 
 And subsequently creating an index.js with the following lines:
@@ -171,7 +172,7 @@ mockserver.startMockServer(<config-folder-path>, <data-folder-path>,
 });
 ```
 
-The config-object can be used to seth regular or custom responses. Custom responses can be created by passing a method to the response that will return at that endpoint.
+The config-object can be used to set regular or custom responses. Custom responses can be created by passing a method to the response that will return at that endpoint.
 
 The default configurations attempt to set the fallback options, like a 200 success status.
 The override configuration can be used to, for example, return errors for all endpoints. This enables you to test error responses across the board or you can set the default latency to test higher latency responses. 
