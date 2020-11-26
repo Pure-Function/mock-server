@@ -4,7 +4,7 @@ import { RequestConfig } from "../domain/RequestConfig";
 import { PathConfig } from "../domain/PathConfig";
 import { DefaultConfig } from "../domain/DefaultConfig";
 import { ErrorConfig } from "../domain/ErrorConfig";
-import { OverwriteConfig } from "../domain/OverwriteConfig";
+import { OverrideConfig } from "../domain/OverrideConfig";
 import { RequestType } from "../domain/RequestType";
 import { ExecutorFunction } from "../domain/ExecutorFunction";
 
@@ -113,7 +113,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): string {
     const attrName = ConfigConstants.KEY_ID_NAME;
     return this.getValue(
@@ -127,7 +127,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): RequestType {
     const attrName = ConfigConstants.KEY_REQUEST_TYPE;
     return this.getValue(
@@ -141,7 +141,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): boolean {
     return this.configService.isPatternized(pathConfig);
   }
@@ -150,11 +150,11 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): number {
     const attrName = ConfigConstants.KEY_LATENCY;
     return this.getValue(
-      this.getAttrValue(overwriteConfig, attrName),
+      this.getAttrValue(overrideConfig, attrName),
       this.getAttrValue(pathConfig, attrName),
       this.getAttrValue(defaultConfig, attrName),
       0
@@ -165,7 +165,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): string {
     const attrName = ConfigConstants.KEY_RESPONSE;
     return this.getFilePath(this.getAttrValue(errorConfig, attrName));
@@ -175,7 +175,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): string {
     const attrName = ConfigConstants.KEY_RESPONSE;
     return this.getValue(
@@ -188,7 +188,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): number {
     const attrName = ConfigConstants.KEY_STATUS_CODE;
     return this.getValue(
@@ -201,11 +201,11 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): string {
     const attrName = ConfigConstants.KEY_RESPONSE;
-    return this.getAttrValue(overwriteConfig, attrName)
-      ? this.getFilePath(this.getAttrValue(overwriteConfig, attrName))
+    return this.getAttrValue(overrideConfig, attrName)
+      ? this.getFilePath(this.getAttrValue(overrideConfig, attrName))
       : this.getFilePath(this.getAttrValue(pathConfig, attrName));
   }
 
@@ -213,11 +213,11 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): string {
     const attrName = ConfigConstants.KEY_RESPONSE;
-    return this.getAttrValue(overwriteConfig, attrName)
-      ? this.getResponseMessage(this.getAttrValue(overwriteConfig, attrName))
+    return this.getAttrValue(overrideConfig, attrName)
+      ? this.getResponseMessage(this.getAttrValue(overrideConfig, attrName))
       : this.getResponseMessage(this.getAttrValue(pathConfig, attrName));
   }
 
@@ -225,11 +225,11 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): number {
     const attrName = ConfigConstants.KEY_STATUS_CODE;
     return this.getValue(
-      this.getAttrValue(overwriteConfig, attrName),
+      this.getAttrValue(overrideConfig, attrName),
       this.getAttrValue(pathConfig, attrName),
       this.getAttrValue(defaultConfig, attrName),
       ConfigConstants.DEFAULT_ERROR_HTTP_STATUS_CODE
@@ -240,11 +240,11 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): string[] {
     const attrName = ConfigConstants.KEY_RESPONSE;
-    return this.getAttrValue(overwriteConfig, attrName)
-      ? this.getFolderPaths(this.getAttrValue(overwriteConfig, attrName))
+    return this.getAttrValue(overrideConfig, attrName)
+      ? this.getFolderPaths(this.getAttrValue(overrideConfig, attrName))
       : this.getValue(
           this.getFolderPaths(this.getAttrValue(pathConfig, attrName)),
           this.getFolderPaths(this.getAttrValue(defaultConfig, attrName))
@@ -255,11 +255,11 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): string {
     const attrName = ConfigConstants.KEY_RESPONSE;
-    return this.getAttrValue(overwriteConfig, attrName)
-      ? this.getFolderPath(this.getAttrValue(overwriteConfig, attrName))
+    return this.getAttrValue(overrideConfig, attrName)
+      ? this.getFolderPath(this.getAttrValue(overrideConfig, attrName))
       : this.getValue(
           this.getFolderPath(this.getAttrValue(pathConfig, attrName)),
           this.getFolderPath(this.getAttrValue(defaultConfig, attrName))
@@ -270,7 +270,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): ExecutorFunction {
     const attrName = ConfigConstants.KEY_RESPONSE;
     return this.getFunction(this.getAttrValue(pathConfig, attrName));
@@ -279,7 +279,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): Record<string, any> {
     const attrName = ConfigConstants.KEY_OTHER_CONFIG;
     return this.getValue(
@@ -293,7 +293,7 @@ export class RequestConfigConverter {
     pathConfig: PathConfig,
     defaultConfig: DefaultConfig,
     errorConfig: ErrorConfig,
-    overwriteConfig: OverwriteConfig
+    overrideConfig: OverrideConfig
   ): RequestConfig {
     if (!pathConfig) {
       return null;
@@ -303,88 +303,88 @@ export class RequestConfigConverter {
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       requestType: this.getRequestType(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       isPatternized: this.isPtternized(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       latency: this.getLatency(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
 
       errorFilePath: this.getErrorFilePath(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       errorMsg: this.getErrorMsg(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       errorStatusCode: this.getErrorStatusCode(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
 
       successFilePath: this.getSuccessFilePath(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       successMsg: this.getSuccessMsg(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       successStatusCode: this.getSuccessStatusCode(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       searchPaths: this.getSearchPaths(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       writePath: this.getWritePath(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
       executorFunction: this.getExecutorFunction(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       ),
 
       otherConfig: this.getOtherConfig(
         pathConfig,
         defaultConfig,
         errorConfig,
-        overwriteConfig
+        overrideConfig
       )
     } as RequestConfig;
   }

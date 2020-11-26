@@ -21,7 +21,7 @@ export class RequestConfigService {
       this.configService.getPathConfig(reqPath, forPost),
       this.configService.getDefaultConfig(reqPath),
       this.configService.getErrorConfig(reqPath),
-      this.configService.getOverwriteConfig(reqPath)
+      this.configService.getOverrideConfig(reqPath)
     );
   }
 

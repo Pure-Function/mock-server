@@ -56,7 +56,7 @@ export class Routes {
         statusCode: 400,
         response: "Invalid Request."
       },
-      overwriteConfig: {
+      overrideConfig: {
         statusCode: null,
         response: null,
         latency: null

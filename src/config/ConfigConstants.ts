@@ -11,7 +11,7 @@ export class ConfigConstants {
 
   public static readonly KEYCONFIG_PATH_SETTINGS: string = "pathSettings";
   public static readonly KEYCONFIG_DEFAULT_CONFIG: string = "defaultConfig";
-  public static readonly KEYCONFIG_OVERWRITE_CONFIG: string = "overwriteConfig";
+  public static readonly KEYCONFIG_OVERRIDE_CONFIG: string = "overrideConfig";
   public static readonly KEYCONFIG_ERROR_CONFIG: string = "errorConfig";
 
   public static readonly KEY_REQUEST_TYPE: string = "requestType";

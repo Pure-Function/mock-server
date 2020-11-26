@@ -3,7 +3,7 @@ import { ConfigConstants } from "./ConfigConstants";
 import { PathConfig } from "../domain/PathConfig";
 import { ErrorConfig } from "../domain/ErrorConfig";
 import { DefaultConfig } from "../domain/DefaultConfig";
-import { OverwriteConfig } from "../domain/OverwriteConfig";
+import { OverrideConfig } from "../domain/OverrideConfig";
 import { PatternizedPathConfig } from "../domain/PatternizedPathConfig";
 import { PatternizedConfigService } from "./PatternizedPathConfigService";
 import { isEmpty } from "lodash";
@@ -14,14 +14,14 @@ export class ConfigService {
   private patternizedPathConfigData: PatternizedPathConfig[] = [];
   private defaultConfigData: DefaultConfig;
   private errorConfigData: ErrorConfig;
-  private overwriteConfigData: OverwriteConfig;
+  private overrideConfigData: OverrideConfig;
 
   constructor(configFolderPath: string, dynamicConfig: any) {
     this.configFolderPath = configFolderPath;
     this.initializePathConfigData(dynamicConfig as PathConfig[]);
     this.initializeDefaultConfigData();
     this.initializeErrorConfigData();
-    this.initializeOverwriteConfigData();
+    this.initializeOverrideConfigData();
   }
 
   private getConfigFilesByOrder() {
@@ -89,13 +89,13 @@ export class ConfigService {
     this.errorConfigData = fileContent[ConfigConstants.KEYCONFIG_ERROR_CONFIG];
   }
 
-  private initializeOverwriteConfigData() {
+  private initializeOverrideConfigData() {
     const fileContent: any = FileSystemService.readJsonFileSyncFromFolder(
       this.configFolderPath,
       ConfigConstants.DEFAULT_CONFIG
     );
-    this.overwriteConfigData =
-      fileContent[ConfigConstants.KEYCONFIG_OVERWRITE_CONFIG];
+    this.overrideConfigData =
+      fileContent[ConfigConstants.KEYCONFIG_OVERRIDE_CONFIG];
   }
 
   public getPathConfig(reqPath: string, forPost = false): PathConfig {
@@ -117,8 +117,8 @@ export class ConfigService {
     return null;
   }
 
-  public getOverwriteConfig(reqPath: string): OverwriteConfig {
-    return this.overwriteConfigData;
+  public getOverrideConfig(reqPath: string): OverrideConfig {
+    return this.overrideConfigData;
   }
 
   public getDefaultConfig(reqPath: string): DefaultConfig {

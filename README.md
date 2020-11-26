@@ -4,9 +4,8 @@ To meet the need of rapid front end development against established or even chan
 
 With minimal configuration (declaring the paths to your data) you can mock a restful service with full CRUD capabilities. With a bit more configuration you can mock other calls like file upload and download, and search endpoints. And to test failure you can throw errors easily. By default mock-server uses a file based storage of the json it sends and retrieves, setting mock-server apart from other mock servers as you can quickly mimic CRUD and examine the requests and tailor the responses.
 
-!!! we will add references to template and samples git repositories.
-
-!!! add section on similar products
+A template server is available at https://github.com/Pure-Function/mock-server-template
+Sample server setups are available at https://github.com/Pure-Function/mock-server-samples
 
 ## Quick setup
 
@@ -25,11 +24,9 @@ npm start
 
 ### Standalone using express server
 
-If you follow the template sample, you can start your own server by adding the mock server to your project.
+If you follow the template sample, you can start your own server and add the mock server to your project.
 
 ```console
-yarn add @funq/mock-server
-or
 npm i @funq/mock-server
 ```
 
@@ -39,15 +36,12 @@ const mockserver = require('@funq/mock-server'); 
 mockserver.startMockServer(<config-folder-path>, <data-folder-path>);
 ```
 
-
 ### Set up as middleware using express server
 
 You can add mock-server to an existing server as middleware where it will return all configured paths in mock-server and turn the rest over to the actual server, allowing full or partial mocking of your API
 
 ```console
-yarn add @funq/mock-server
-or
-npm -i @funq/mock-server
+npm i @funq/mock-server
 ```
 
 ```javascript
@@ -73,6 +67,8 @@ app.listen(3001);
 
 Out of the box mock-server does provide a powerful default configuration which stores and retrieves requests and response into a mock data folder. Declaring the paths of your endpoints is enough to set up a CRUD server that is fully operational.
 
+You can find sample setups at https://github.com/Pure-Function/mock-server-samples
+
 The server uses configuration files stored in a folder specified when starting the server. Similarly the path to the data repository folder is also configured on startup.
 
 ```
@@ -81,9 +77,9 @@ e.g.
 mockserver.startMockServer('./mock-data/config', './mock-data/data');
 ```
 
-The config folder will create an auto generated global.json and optional <specific>.json files. The global.json file created can be used as the basis for your mock server.
+The config folder will contain an auto-generated global.json and optional <specific>.json files. The global.json file can be used as the basis for your mock server.
 
-Default created global.json:
+Default global.json:
 ```json
 {
   "pathSettings": {
@@ -103,7 +99,7 @@ Default created global.json:
     "statusCode": 400,
     "response": "Invalid Request."
   },
-  "overwriteConfig": {
+  "overrideConfig": {
     "statusCode": null,
     "response": null,
     "latency": null
@@ -177,9 +173,9 @@ The config-object can be used to set regular or custom responses. Custom respons
 The default configurations attempt to set the fallback options, like a 200 success status.
 The override configuration can be used to, for example, return errors for all endpoints. This enables you to test error responses across the board or you can set the default latency to test higher latency responses. 
 
-## Advanced Configuration - parameters detailed
+## Advanced Configuration - configuration parameters
 
-### **Path & default configuration options**
+### **pathSettings & defaultConfig options**
 
 - **requestType** - *enum - default: REST* - use this to add different endpoints. Allowed values are REST, REST_PLURAL, REST_FETCH, FILE_DOWNLOAD, FILE_VIEW, FILE_UPLOAD, CUSTOM.
 - **statusCode** - *number - default: 200* - the status code of a (successful) response. To test failure or non standard responses change the status code 
@@ -188,7 +184,7 @@ The override configuration can be used to, for example, return errors for all en
 - **response** - *string|string array|function - the response option is the most complex and warrants its own detailed documentation (see below), but the default is a string starting with a / indicating a path within the mock data folder where json responses to calls reside. Omitting the / on a string will simply return the string and adding an object will return that object. 
 - **otherConfig** - *object - default: {} - place holder to store any other configuration data. this may required mainly for custom processing.
 
-### **Override configuration** 
+### **overrideConfig options** 
 
 No default override configuration options exist
 
@@ -196,11 +192,11 @@ No default override configuration options exist
 - **response** - use this to override all default and path responses, to, for example, return a default error with the above 403 status code
 - **latency** - *number*- use this to enforce response latency for all endpoints
 
-### **Error configuration** 
+### **errorConfig options** 
 - **statusCode** - *number - default: 400* - in instances were the server throws an error because, for example, a request is bad or data is missing, mock-server server throws a 400 error, a different code can be configured
 - **response** - *string|object* - when the server throws an error it attempts to return a meaningful error, to override that error a different response can be set here
 
-## Advanced Configuration - Custom Requests
+## Advanced Configuration - Custom Responses
 The mock server can handle complete custom request/response logic using the CUSTOM requestType and by passing a function to the response parameter.
 
 Sample javascript configuration is below.
@@ -253,7 +249,7 @@ Below is a sample of pathSettings configurations.
     "/user/authorize": {
       "idName": "userId",
       "statusCode": 403,
-      "response": "User doesn't have persmissions."
+      "response": "User doesn't have permissions."
     }
   }
 }
