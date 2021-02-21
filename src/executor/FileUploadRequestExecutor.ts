@@ -7,6 +7,7 @@ import { RequestExecutor } from "./RequestExecutor";
 import { RequestType } from "../domain/RequestType";
 import { FileSystemService } from "../filesystem/FileSystemService";
 import { RequestConfigService } from "../request/RequestConfigService";
+import { UploadedFile } from "express-fileupload";
 
 export class FileUploadRequestExecutor implements RequestExecutor {
   dataStore: DataStore;
@@ -32,7 +33,7 @@ export class FileUploadRequestExecutor implements RequestExecutor {
       successStatusCode
     } = requestConfig;
     if (request.files) {
-      const uploadedFile = request.files[idName];
+      const uploadedFile = request.files[idName] as UploadedFile;
       //TODO: this to be changed to support other file systems.
       uploadedFile.mv(
         FileSystemService.join(
